@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { getAIHakimResponse } from '../services/geminiService';
-import { Product } from '../types';
+import { getAIHakimResponse } from '../services/geminiService.ts';
+import { Product } from '../types.ts';
 
 interface AIAssistantProps {
   products: Product[];

@@ -1,9 +1,15 @@
 
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 export const getAIHakimResponse = async (userMessage: string, availableProducts: any[]) => {
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) {
+    console.warn("API Key missing, AI Hakim is disabled.");
+    return "I am currently meditating on the herbs. Please try again later.";
+  }
+
+  const ai = new GoogleGenAI({ apiKey });
+
   try {
     const productList = availableProducts.map(p => `- ${p.name}: ${p.description}`).join('\n');
     

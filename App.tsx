@@ -1,17 +1,17 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { HashRouter, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
-import { Product, CartItem, Order, Coupon } from './types';
-import { INITIAL_PRODUCTS, CATEGORIES } from './data';
-import Home from './components/Home';
-import Shop from './components/Shop';
-import Cart from './components/Cart';
-import Checkout from './components/Checkout';
-import Admin from './components/Admin';
-import UserPanel from './components/UserPanel';
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
-import AIAssistant from './components/AIAssistant';
+import React, { useState, useEffect } from 'react';
+import { HashRouter, Routes, Route } from 'react-router-dom';
+import { Product, CartItem, Order, Coupon } from './types.ts';
+import { INITIAL_PRODUCTS, CATEGORIES } from './data.ts';
+import Home from './components/Home.tsx';
+import Shop from './components/Shop.tsx';
+import Cart from './components/Cart.tsx';
+import Checkout from './components/Checkout.tsx';
+import Admin from './components/Admin.tsx';
+import UserPanel from './components/UserPanel.tsx';
+import Navbar from './components/Navbar.tsx';
+import Footer from './components/Footer.tsx';
+import AIAssistant from './components/AIAssistant.tsx';
 
 const App: React.FC = () => {
   const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
@@ -20,7 +20,6 @@ const App: React.FC = () => {
   const [userOrders, setUserOrders] = useState<Order[]>([]);
   const [activeCoupon, setActiveCoupon] = useState<Coupon | null>(null);
 
-  // Persistence (Simulated)
   useEffect(() => {
     const savedCart = localStorage.getItem('hakim_cart');
     if (savedCart) setCart(JSON.parse(savedCart));
@@ -110,7 +109,6 @@ const App: React.FC = () => {
         <AIAssistant products={products} />
         <Footer />
         
-        {/* Floating WhatsApp Integration */}
         <a 
           href="https://wa.me/1234567890?text=Hello Hakim, I am interested in your Ayurvedic products." 
           target="_blank" 
