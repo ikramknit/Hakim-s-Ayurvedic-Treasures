@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
-import { Order, Product } from '../types';
+import { Order, Product } from '../types.ts';
+import { CATEGORIES } from '../data.ts';
 
 interface AdminProps {
   orders: Order[];
@@ -11,10 +12,57 @@ interface AdminProps {
 
 const Admin: React.FC<AdminProps> = ({ orders, products, updateOrderStatus, setProducts }) => {
   const [activeTab, setActiveTab] = useState<'orders' | 'products'>('orders');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newProduct, setNewProduct] = useState<Partial<Product>>({
+    name: '',
+    description: '',
+    price: 0,
+    category: CATEGORIES[1] || 'General',
+    image: '',
+    stock: 0,
+    tags: [],
+    isOnSale: false,
+    oldPrice: 0
+  });
+
+  const handleAddProduct = (e: React.FormEvent) => {
+    e.preventDefault();
+    const productToAdd: Product = {
+      id: `PRD-${Date.now()}`,
+      name: newProduct.name || 'New Product',
+      description: newProduct.description || '',
+      price: Number(newProduct.price) || 0,
+      oldPrice: newProduct.isOnSale ? Number(newProduct.oldPrice) : undefined,
+      category: newProduct.category || 'General',
+      image: newProduct.image || 'https://images.unsplash.com/photo-1512428813834-c702c7702b78?q=80&w=800&auto=format&fit=crop',
+      stock: Number(newProduct.stock) || 0,
+      tags: newProduct.tags || [],
+      isOnSale: !!newProduct.isOnSale
+    };
+
+    setProducts(prev => [productToAdd, ...prev]);
+    setIsModalOpen(false);
+    setNewProduct({
+      name: '',
+      description: '',
+      price: 0,
+      category: CATEGORIES[1],
+      image: '',
+      stock: 0,
+      tags: [],
+      isOnSale: false
+    });
+  };
+
+  const deleteProduct = (id: string) => {
+    if (window.confirm('Are you sure you want to remove this product?')) {
+      setProducts(prev => prev.filter(p => p.id !== id));
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
-      <div className="flex items-center justify-between mb-10">
+      <div className="flex flex-col md:flex-row items-center justify-between mb-10 gap-4">
         <h1 className="text-4xl font-bold">Admin Dashboard</h1>
         <div className="flex gap-2 bg-stone-100 p-1 rounded-xl">
           <button 
@@ -33,8 +81,8 @@ const Admin: React.FC<AdminProps> = ({ orders, products, updateOrderStatus, setP
       </div>
 
       {activeTab === 'orders' ? (
-        <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden">
-          <table className="w-full text-left">
+        <div className="bg-white rounded-2xl border border-stone-200 overflow-x-auto">
+          <table className="w-full text-left min-w-[800px]">
             <thead className="bg-stone-50 text-stone-500 text-sm uppercase tracking-wider font-bold">
               <tr>
                 <th className="px-6 py-4">Order ID</th>
@@ -92,26 +140,158 @@ const Admin: React.FC<AdminProps> = ({ orders, products, updateOrderStatus, setP
       ) : (
         <div className="space-y-6">
            <div className="flex justify-between items-center">
-             <h2 className="text-2xl font-bold">Manage Inventory</h2>
-             <button className="bg-ayurveda-green text-white px-4 py-2 rounded-lg font-bold">+ Add Product</button>
+             <h2 className="text-2xl font-bold">Manage Inventory ({products.length} Products)</h2>
+             <button 
+                onClick={() => setIsModalOpen(true)}
+                className="bg-ayurveda-green text-white px-6 py-3 rounded-xl font-bold hover:bg-stone-800 transition shadow-lg"
+             >
+               + Add New Product
+             </button>
            </div>
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {products.map(p => (
-                <div key={p.id} className="bg-white p-6 rounded-2xl border border-stone-200 flex gap-4">
+                <div key={p.id} className="bg-white p-6 rounded-2xl border border-stone-200 flex gap-4 relative group">
                   <img src={p.image} className="w-20 h-20 object-cover rounded-xl" alt={p.name} />
                   <div className="flex-grow">
-                    <h3 className="font-bold">{p.name}</h3>
-                    <p className="text-sm text-stone-400">{p.category}</p>
+                    <h3 className="font-bold text-stone-800">{p.name}</h3>
+                    <p className="text-xs text-stone-400 font-medium uppercase tracking-wider">{p.category}</p>
                     <div className="flex justify-between items-center mt-2">
-                      <span className="font-bold text-ayurveda-green">${p.price}</span>
+                      <div className="flex flex-col">
+                        <span className="font-bold text-ayurveda-green text-lg">${p.price}</span>
+                        {p.isOnSale && <span className="text-xs text-red-500 line-through">${p.oldPrice}</span>}
+                      </div>
                       <span className={`text-xs px-2 py-0.5 rounded font-bold ${p.stock < 10 ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}`}>
                         {p.stock} in stock
                       </span>
                     </div>
                   </div>
+                  <button 
+                    onClick={() => deleteProduct(p.id)}
+                    className="absolute top-2 right-2 p-2 text-stone-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition"
+                  >
+                    <i className="fas fa-trash-alt"></i>
+                  </button>
                 </div>
               ))}
            </div>
+        </div>
+      )}
+
+      {/* Add Product Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}></div>
+          <div className="bg-white rounded-3xl w-full max-w-2xl relative shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="bg-ayurveda-green p-6 text-white flex justify-between items-center">
+              <h3 className="text-2xl font-bold brand-font">Create New Remedy</h3>
+              <button onClick={() => setIsModalOpen(false)} className="text-white/70 hover:text-white">
+                <i className="fas fa-times text-xl"></i>
+              </button>
+            </div>
+            
+            <form onSubmit={handleAddProduct} className="p-8 space-y-6 max-h-[70vh] overflow-y-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-stone-700">Product Name</label>
+                  <input 
+                    required
+                    type="text"
+                    className="w-full p-3 rounded-xl border border-stone-200 focus:ring-2 focus:ring-ayurveda-green outline-none"
+                    placeholder="e.g., Organic Ashwagandha"
+                    value={newProduct.name}
+                    onChange={e => setNewProduct({...newProduct, name: e.target.value})}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-stone-700">Category</label>
+                  <select 
+                    className="w-full p-3 rounded-xl border border-stone-200 focus:ring-2 focus:ring-ayurveda-green outline-none"
+                    value={newProduct.category}
+                    onChange={e => setNewProduct({...newProduct, category: e.target.value})}
+                  >
+                    {CATEGORIES.filter(c => c !== 'All').map(cat => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-stone-700">Description</label>
+                <textarea 
+                  required
+                  rows={3}
+                  className="w-full p-3 rounded-xl border border-stone-200 focus:ring-2 focus:ring-ayurveda-green outline-none"
+                  placeholder="Describe the healing properties..."
+                  value={newProduct.description}
+                  onChange={e => setNewProduct({...newProduct, description: e.target.value})}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-stone-700">Price ($)</label>
+                  <input 
+                    required
+                    type="number"
+                    step="0.01"
+                    className="w-full p-3 rounded-xl border border-stone-200 focus:ring-2 focus:ring-ayurveda-green outline-none"
+                    value={newProduct.price}
+                    onChange={e => setNewProduct({...newProduct, price: Number(e.target.value)})}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-stone-700">Initial Stock</label>
+                  <input 
+                    required
+                    type="number"
+                    className="w-full p-3 rounded-xl border border-stone-200 focus:ring-2 focus:ring-ayurveda-green outline-none"
+                    value={newProduct.stock}
+                    onChange={e => setNewProduct({...newProduct, stock: Number(e.target.value)})}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-stone-700">Image URL</label>
+                  <input 
+                    type="text"
+                    className="w-full p-3 rounded-xl border border-stone-200 focus:ring-2 focus:ring-ayurveda-green outline-none"
+                    placeholder="https://..."
+                    value={newProduct.image}
+                    onChange={e => setNewProduct({...newProduct, image: e.target.value})}
+                  />
+                </div>
+              </div>
+
+              <div className="p-4 bg-stone-50 rounded-2xl space-y-4">
+                <div className="flex items-center gap-3">
+                  <input 
+                    type="checkbox"
+                    id="onSale"
+                    className="w-5 h-5 rounded accent-ayurveda-green"
+                    checked={newProduct.isOnSale}
+                    onChange={e => setNewProduct({...newProduct, isOnSale: e.target.checked})}
+                  />
+                  <label htmlFor="onSale" className="font-bold text-stone-700">Product is on Sale</label>
+                </div>
+                {newProduct.isOnSale && (
+                  <div className="space-y-2 animate-in slide-in-from-top-2 duration-200">
+                    <label className="text-sm font-bold text-stone-600">Old Price (Before Discount)</label>
+                    <input 
+                      type="number"
+                      step="0.01"
+                      className="w-full p-3 rounded-xl border border-stone-200 focus:ring-2 focus:ring-ayurveda-green outline-none bg-white"
+                      value={newProduct.oldPrice}
+                      onChange={e => setNewProduct({...newProduct, oldPrice: Number(e.target.value)})}
+                    />
+                  </div>
+                )}
+              </div>
+
+              <button type="submit" className="w-full bg-ayurveda-gold text-ayurveda-green py-4 rounded-2xl font-bold text-xl hover:bg-yellow-600 transition shadow-xl mt-4">
+                Add to Inventory
+              </button>
+            </form>
+          </div>
         </div>
       )}
     </div>
