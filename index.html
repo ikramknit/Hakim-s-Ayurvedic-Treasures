@@ -16,11 +16,14 @@
       .border-ayurveda-green { border-color: #1b4332; }
       .bg-ayurveda-gold { background-color: #b08d57; }
       .text-ayurveda-gold { color: #b08d57; }
+      
+      /* Smooth transitions for AI features */
+      .animate-fade-in { animation: fadeIn 0.3s ease-out; }
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
     </style>
-    <script>
-      // Shim process.env for browser compatibility
-      window.process = { env: { API_KEY: "" } };
-    </script>
     <script type="importmap">
     {
       "imports": {

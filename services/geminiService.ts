@@ -2,13 +2,7 @@
 import { GoogleGenAI } from "@google/genai";
 
 export const getAIHakimResponse = async (userMessage: string, availableProducts: any[]) => {
-  const apiKey = process.env.API_KEY;
-  if (!apiKey) {
-    console.warn("API Key missing, AI Hakim is disabled.");
-    return "I am currently meditating on the herbs. Please try again later.";
-  }
-
-  const ai = new GoogleGenAI({ apiKey });
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   try {
     const productList = availableProducts.map(p => `- ${p.name}: ${p.description}`).join('\n');
@@ -22,7 +16,7 @@ export const getAIHakimResponse = async (userMessage: string, availableProducts:
       },
     });
 
-    return response.text;
+    return response.text || "I am reflecting on your path to wellness. Please ask again.";
   } catch (error) {
     console.error("AI Hakim Error:", error);
     return "The spirits of the herbs are silent for a moment. Please try again soon.";
@@ -30,14 +24,12 @@ export const getAIHakimResponse = async (userMessage: string, availableProducts:
 };
 
 export const generateProductImage = async (productName: string, productDescription: string) => {
-  const apiKey = process.env.API_KEY;
-  if (!apiKey) return null;
-
-  const ai = new GoogleGenAI({ apiKey });
+  // Ensure we use the latest injected API key
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const prompt = `Professional product photography of ${productName}. 
   Description: ${productDescription}. 
-  Style: Traditional Ayurvedic medicine setting, clean high-end aesthetic, organic herbs and wooden elements in background, soft natural lighting, 4k resolution, studio quality, white or earthy neutral background. 
+  Style: Traditional Ayurvedic medicine setting, clean high-end aesthetic, organic herbs and wooden elements in background, soft natural lighting, studio quality, white or earthy neutral background. 
   The image should focus clearly on the medicine container or the herbal ingredients.`;
 
   try {
@@ -53,9 +45,12 @@ export const generateProductImage = async (productName: string, productDescripti
       }
     });
 
-    for (const part of response.candidates[0].content.parts) {
-      if (part.inlineData) {
-        return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+    const candidate = response.candidates?.[0];
+    if (candidate?.content?.parts) {
+      for (const part of candidate.content.parts) {
+        if (part.inlineData) {
+          return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+        }
       }
     }
     return null;
