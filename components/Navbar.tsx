@@ -4,9 +4,10 @@ import { Link } from 'react-router-dom';
 
 interface NavbarProps {
   cartCount: number;
+  isLoggedIn: boolean;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ cartCount }) => {
+const Navbar: React.FC<NavbarProps> = ({ cartCount, isLoggedIn }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -18,7 +19,7 @@ const Navbar: React.FC<NavbarProps> = ({ cartCount }) => {
               <div className="bg-ayurveda-gold p-2 rounded-full">
                 <i className="fas fa-leaf text-ayurveda-green text-xl"></i>
               </div>
-              <span className="brand-font text-2xl font-bold tracking-tight">HAKIM'S TREASURES</span>
+              <span className="brand-font text-2xl font-bold tracking-tight uppercase">Hakim's</span>
             </Link>
           </div>
 
@@ -26,7 +27,18 @@ const Navbar: React.FC<NavbarProps> = ({ cartCount }) => {
             <Link to="/" className="hover:text-ayurveda-gold transition">Home</Link>
             <Link to="/shop" className="hover:text-ayurveda-gold transition">Shop</Link>
             <Link to="/admin" className="hover:text-ayurveda-gold transition">Admin</Link>
-            <Link to="/account" className="hover:text-ayurveda-gold transition">My Orders</Link>
+            
+            {isLoggedIn ? (
+              <Link to="/account" className="flex items-center gap-2 hover:text-ayurveda-gold transition">
+                <i className="fas fa-user-circle"></i>
+                Profile
+              </Link>
+            ) : (
+              <Link to="/login" className="bg-ayurveda-gold/10 px-4 py-2 rounded-lg border border-ayurveda-gold/30 hover:bg-ayurveda-gold hover:text-ayurveda-green transition font-bold">
+                Login
+              </Link>
+            )}
+
             <Link to="/cart" className="relative p-2 hover:text-ayurveda-gold transition">
               <i className="fas fa-shopping-cart text-xl"></i>
               {cartCount > 0 && (
@@ -54,11 +66,15 @@ const Navbar: React.FC<NavbarProps> = ({ cartCount }) => {
       </div>
 
       {isOpen && (
-        <div className="md:hidden bg-ayurveda-green pb-4 px-4 space-y-2">
-          <Link to="/" className="block py-2" onClick={() => setIsOpen(false)}>Home</Link>
-          <Link to="/shop" className="block py-2" onClick={() => setIsOpen(false)}>Shop</Link>
-          <Link to="/admin" className="block py-2" onClick={() => setIsOpen(false)}>Admin</Link>
-          <Link to="/account" className="block py-2" onClick={() => setIsOpen(false)}>Account</Link>
+        <div className="md:hidden bg-ayurveda-green pb-4 px-4 space-y-2 border-t border-white/10">
+          <Link to="/" className="block py-3 border-b border-white/5" onClick={() => setIsOpen(false)}>Home</Link>
+          <Link to="/shop" className="block py-3 border-b border-white/5" onClick={() => setIsOpen(false)}>Shop</Link>
+          <Link to="/admin" className="block py-3 border-b border-white/5" onClick={() => setIsOpen(false)}>Admin</Link>
+          {isLoggedIn ? (
+            <Link to="/account" className="block py-3 border-b border-white/5" onClick={() => setIsOpen(false)}>My Profile</Link>
+          ) : (
+            <Link to="/login" className="block py-3 border-b border-white/5 font-bold text-ayurveda-gold" onClick={() => setIsOpen(false)}>Login</Link>
+          )}
         </div>
       )}
     </nav>

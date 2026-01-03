@@ -8,9 +8,10 @@ interface AdminProps {
   products: Product[];
   updateOrderStatus: (id: string, s: Order['status']) => void;
   setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
+  onLogout: () => void;
 }
 
-const Admin: React.FC<AdminProps> = ({ orders, products, updateOrderStatus, setProducts }) => {
+const Admin: React.FC<AdminProps> = ({ orders, products, updateOrderStatus, setProducts, onLogout }) => {
   const [activeTab, setActiveTab] = useState<'orders' | 'products'>('orders');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newProduct, setNewProduct] = useState<Partial<Product>>({
@@ -65,7 +66,15 @@ const Admin: React.FC<AdminProps> = ({ orders, products, updateOrderStatus, setP
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
       <div className="flex flex-col md:flex-row items-center justify-between mb-10 gap-4">
-        <h1 className="text-4xl font-bold">Admin Dashboard</h1>
+        <div>
+          <h1 className="text-4xl font-bold">Admin Dashboard</h1>
+          <button 
+            onClick={onLogout}
+            className="text-red-500 text-sm font-bold hover:underline mt-2 flex items-center gap-2"
+          >
+            <i className="fas fa-sign-out-alt"></i> Logout Securely
+          </button>
+        </div>
         <div className="flex gap-2 bg-stone-100 p-1 rounded-xl">
           <button 
             onClick={() => setActiveTab('orders')}

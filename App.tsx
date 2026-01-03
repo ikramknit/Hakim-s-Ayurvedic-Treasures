@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { HashRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Product, CartItem, Order, Coupon } from './types.ts';
 import { INITIAL_PRODUCTS, CATEGORIES } from './data.ts';
 import Home from './components/Home.tsx';
@@ -8,6 +8,8 @@ import Shop from './components/Shop.tsx';
 import Cart from './components/Cart.tsx';
 import Checkout from './components/Checkout.tsx';
 import Admin from './components/Admin.tsx';
+import AdminLogin from './components/AdminLogin.tsx';
+import CustomerLogin from './components/CustomerLogin.tsx';
 import UserPanel from './components/UserPanel.tsx';
 import Navbar from './components/Navbar.tsx';
 import Footer from './components/Footer.tsx';
@@ -19,6 +21,16 @@ const App: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [userOrders, setUserOrders] = useState<Order[]>([]);
   const [activeCoupon, setActiveCoupon] = useState<Coupon | null>(null);
+  
+  // Admin Auth State
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(() => {
+    return localStorage.getItem('hakim_admin_auth') === 'true';
+  });
+
+  // Customer Auth State
+  const [isCustomerLoggedIn, setIsCustomerLoggedIn] = useState<boolean>(() => {
+    return localStorage.getItem('hakim_user_auth') === 'true';
+  });
 
   useEffect(() => {
     const savedCart = localStorage.getItem('hakim_cart');
@@ -62,6 +74,26 @@ const App: React.FC = () => {
     setUserOrders(prev => prev.map(o => o.id === orderId ? { ...o, status } : o));
   };
 
+  const handleAdminLogin = () => {
+    setIsAdminLoggedIn(true);
+    localStorage.setItem('hakim_admin_auth', 'true');
+  };
+
+  const handleAdminLogout = () => {
+    setIsAdminLoggedIn(false);
+    localStorage.removeItem('hakim_admin_auth');
+  };
+
+  const handleCustomerLogin = () => {
+    setIsCustomerLoggedIn(true);
+    localStorage.setItem('hakim_user_auth', 'true');
+  };
+
+  const handleCustomerLogout = () => {
+    setIsCustomerLoggedIn(false);
+    localStorage.removeItem('hakim_user_auth');
+  };
+
   const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const discount = activeCoupon ? total * (activeCoupon.discount / 100) : 0;
   const finalTotal = total - discount;
@@ -69,7 +101,10 @@ const App: React.FC = () => {
   return (
     <HashRouter>
       <div className="flex flex-col min-h-screen relative">
-        <Navbar cartCount={cart.reduce((a, b) => a + b.quantity, 0)} />
+        <Navbar 
+          cartCount={cart.reduce((a, b) => a + b.quantity, 0)} 
+          isLoggedIn={isCustomerLoggedIn}
+        />
         
         <main className="flex-grow">
           <Routes>
@@ -95,14 +130,29 @@ const App: React.FC = () => {
               />
             } />
             <Route path="/admin" element={
-              <Admin 
-                orders={orders} 
-                products={products} 
-                updateOrderStatus={updateOrderStatus}
-                setProducts={setProducts}
-              />
+              isAdminLoggedIn ? (
+                <Admin 
+                  orders={orders} 
+                  products={products} 
+                  updateOrderStatus={updateOrderStatus}
+                  setProducts={setProducts}
+                  onLogout={handleAdminLogout}
+                />
+              ) : (
+                <AdminLogin onLogin={handleAdminLogin} />
+              )
             } />
-            <Route path="/account" element={<UserPanel orders={userOrders} />} />
+            <Route path="/login" element={
+              isCustomerLoggedIn ? <Navigate to="/account" replace /> : <CustomerLogin onLogin={handleCustomerLogin} />
+            } />
+            <Route path="/account" element={
+              isCustomerLoggedIn ? (
+                <UserPanel orders={userOrders} onLogout={handleCustomerLogout} />
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            } />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
 
