@@ -113,7 +113,7 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, total, placeOrder }) => {
             </div>
 
             <button type="submit" className="w-full bg-ayurveda-green text-white py-5 rounded-xl font-bold text-xl hover:bg-stone-800 transition shadow-xl">
-              Pay ${total.toFixed(2)} & Place Order
+              Pay ₹{total.toFixed(0)} & Place Order
             </button>
           </form>
         </div>
@@ -124,13 +124,13 @@ const Checkout: React.FC<CheckoutProps> = ({ cart, total, placeOrder }) => {
             {cart.map(item => (
               <div key={item.id} className="flex justify-between">
                 <span>{item.name} <span className="text-stone-400 text-sm">x{item.quantity}</span></span>
-                <span className="font-bold">${(item.price * item.quantity).toFixed(2)}</span>
+                <span className="font-bold">₹{(item.price * item.quantity).toFixed(0)}</span>
               </div>
             ))}
           </div>
           <div className="border-t border-stone-200 pt-4 flex justify-between text-2xl font-bold">
             <span>Total Payable</span>
-            <span className="text-ayurveda-green">${total.toFixed(2)}</span>
+            <span className="text-ayurveda-green">₹{total.toFixed(0)}</span>
           </div>
           <div className="mt-8 p-4 bg-white rounded-2xl flex items-center gap-4">
             <i className="fas fa-shield-alt text-2xl text-green-500"></i>

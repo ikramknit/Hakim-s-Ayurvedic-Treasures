@@ -68,7 +68,7 @@ const Home: React.FC<HomeProps> = ({ products, addToCart }) => {
       <section className="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8">
         {[
           { icon: 'fa-vial', title: 'Lab Tested', desc: 'Purity guaranteed' },
-          { icon: 'fa-truck-fast', title: 'Free Shipping', desc: 'On orders over $50' },
+          { icon: 'fa-truck-fast', title: 'Free Delivery', desc: 'On orders over ₹999' },
           { icon: 'fa-user-md', title: 'Expert Hakim', desc: 'Traditional guidance' },
           { icon: 'fa-whatsapp', title: 'Support', desc: 'Direct WhatsApp help' }
         ].map((item, i) => (
@@ -105,8 +105,8 @@ const Home: React.FC<HomeProps> = ({ products, addToCart }) => {
                 <div className="p-6">
                   <h3 className="font-bold text-xl mb-2 line-clamp-1">{product.name}</h3>
                   <div className="flex items-center gap-2 mb-4">
-                    <span className="text-2xl font-bold text-ayurveda-green">${product.price}</span>
-                    <span className="text-stone-400 line-through text-sm">${product.oldPrice}</span>
+                    <span className="text-2xl font-bold text-ayurveda-green">₹{product.price}</span>
+                    <span className="text-stone-400 line-through text-sm">₹{product.oldPrice}</span>
                   </div>
                   <button 
                     onClick={() => addToCart(product)}

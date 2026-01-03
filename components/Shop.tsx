@@ -87,12 +87,12 @@ const Shop: React.FC<ShopProps> = ({ products, addToCart, categories }) => {
                 </div>
                 <div className="p-6">
                   <div className="text-xs font-bold text-ayurveda-gold uppercase tracking-widest mb-1">{product.category}</div>
-                  <h3 className="font-bold text-xl mb-2">{product.name}</h3>
+                  <h3 className="font-bold text-xl mb-2 line-clamp-1">{product.name}</h3>
                   <p className="text-stone-500 text-sm mb-4 line-clamp-2">{product.description}</p>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="text-2xl font-bold text-ayurveda-green">${product.price}</span>
-                      {product.oldPrice && <span className="text-stone-400 line-through text-sm">${product.oldPrice}</span>}
+                      <span className="text-2xl font-bold text-ayurveda-green">₹{product.price}</span>
+                      {product.oldPrice && <span className="text-stone-400 line-through text-sm">₹{product.oldPrice}</span>}
                     </div>
                     <button 
                       onClick={() => addToCart(product)}

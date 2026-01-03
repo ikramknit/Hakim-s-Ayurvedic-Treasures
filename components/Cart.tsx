@@ -56,7 +56,7 @@ const Cart: React.FC<CartProps> = ({
               </div>
               <div className="flex-grow">
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-bold text-xl">{item.name}</h3>
+                  <h3 className="font-bold text-xl line-clamp-1">{item.name}</h3>
                   <button onClick={() => removeFromCart(item.id)} className="text-stone-400 hover:text-red-500">
                     <i className="fas fa-trash"></i>
                   </button>
@@ -68,7 +68,7 @@ const Cart: React.FC<CartProps> = ({
                     <span className="font-bold w-4 text-center">{item.quantity}</span>
                     <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="text-ayurveda-green font-bold">+</button>
                   </div>
-                  <span className="text-xl font-bold">${(item.price * item.quantity).toFixed(2)}</span>
+                  <span className="text-xl font-bold">₹{(item.price * item.quantity).toFixed(0)}</span>
                 </div>
               </div>
             </div>
@@ -96,12 +96,12 @@ const Cart: React.FC<CartProps> = ({
           <div className="space-y-4 text-stone-600">
             <div className="flex justify-between">
               <span>Subtotal</span>
-              <span className="font-bold">${total.toFixed(2)}</span>
+              <span className="font-bold">₹{total.toFixed(0)}</span>
             </div>
             {activeCoupon && (
               <div className="flex justify-between text-green-600">
                 <span>Discount ({activeCoupon.code})</span>
-                <span className="font-bold">-${discount.toFixed(2)}</span>
+                <span className="font-bold">-₹{discount.toFixed(0)}</span>
               </div>
             )}
             <div className="flex justify-between">
@@ -110,7 +110,7 @@ const Cart: React.FC<CartProps> = ({
             </div>
             <div className="border-t pt-4 flex justify-between text-xl font-bold text-stone-900">
               <span>Total</span>
-              <span>${finalTotal.toFixed(2)}</span>
+              <span>₹{finalTotal.toFixed(0)}</span>
             </div>
           </div>
           <Link to="/checkout" className="block w-full bg-ayurveda-gold text-ayurveda-green py-4 rounded-xl font-bold text-center text-lg hover:bg-yellow-600 transition shadow-lg">

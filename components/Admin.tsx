@@ -29,12 +29,12 @@ const Admin: React.FC<AdminProps> = ({ orders, products, updateOrderStatus, setP
     e.preventDefault();
     const productToAdd: Product = {
       id: `PRD-${Date.now()}`,
-      name: newProduct.name || 'New Product',
+      name: newProduct.name || 'New Remedy',
       description: newProduct.description || '',
       price: Number(newProduct.price) || 0,
       oldPrice: newProduct.isOnSale ? Number(newProduct.oldPrice) : undefined,
       category: newProduct.category || 'General',
-      image: newProduct.image || 'https://images.unsplash.com/photo-1512428813834-c702c7702b78?q=80&w=800&auto=format&fit=crop',
+      image: newProduct.image || 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=800&auto=format&fit=crop',
       stock: Number(newProduct.stock) || 0,
       tags: newProduct.tags || [],
       isOnSale: !!newProduct.isOnSale
@@ -50,8 +50,10 @@ const Admin: React.FC<AdminProps> = ({ orders, products, updateOrderStatus, setP
       image: '',
       stock: 0,
       tags: [],
-      isOnSale: false
+      isOnSale: false,
+      oldPrice: 0
     });
+    alert('Product added to inventory!');
   };
 
   const deleteProduct = (id: string) => {
@@ -81,7 +83,7 @@ const Admin: React.FC<AdminProps> = ({ orders, products, updateOrderStatus, setP
       </div>
 
       {activeTab === 'orders' ? (
-        <div className="bg-white rounded-2xl border border-stone-200 overflow-x-auto">
+        <div className="bg-white rounded-2xl border border-stone-200 overflow-x-auto shadow-sm">
           <table className="w-full text-left min-w-[800px]">
             <thead className="bg-stone-50 text-stone-500 text-sm uppercase tracking-wider font-bold">
               <tr>
@@ -117,7 +119,7 @@ const Admin: React.FC<AdminProps> = ({ orders, products, updateOrderStatus, setP
                         {order.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 font-bold">${order.total.toFixed(2)}</td>
+                    <td className="px-6 py-4 font-bold">₹{order.total.toFixed(0)}</td>
                     <td className="px-6 py-4 text-stone-500">{order.date}</td>
                     <td className="px-6 py-4">
                       <select 
@@ -150,18 +152,18 @@ const Admin: React.FC<AdminProps> = ({ orders, products, updateOrderStatus, setP
            </div>
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {products.map(p => (
-                <div key={p.id} className="bg-white p-6 rounded-2xl border border-stone-200 flex gap-4 relative group">
+                <div key={p.id} className="bg-white p-6 rounded-2xl border border-stone-200 flex gap-4 relative group shadow-sm hover:shadow-md transition">
                   <img src={p.image} className="w-20 h-20 object-cover rounded-xl" alt={p.name} />
                   <div className="flex-grow">
-                    <h3 className="font-bold text-stone-800">{p.name}</h3>
+                    <h3 className="font-bold text-stone-800 line-clamp-1">{p.name}</h3>
                     <p className="text-xs text-stone-400 font-medium uppercase tracking-wider">{p.category}</p>
                     <div className="flex justify-between items-center mt-2">
                       <div className="flex flex-col">
-                        <span className="font-bold text-ayurveda-green text-lg">${p.price}</span>
-                        {p.isOnSale && <span className="text-xs text-red-500 line-through">${p.oldPrice}</span>}
+                        <span className="font-bold text-ayurveda-green text-lg">₹{p.price}</span>
+                        {p.isOnSale && <span className="text-xs text-red-500 line-through">₹{p.oldPrice}</span>}
                       </div>
                       <span className={`text-xs px-2 py-0.5 rounded font-bold ${p.stock < 10 ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}`}>
-                        {p.stock} in stock
+                        {p.stock} units
                       </span>
                     </div>
                   </div>
@@ -181,29 +183,29 @@ const Admin: React.FC<AdminProps> = ({ orders, products, updateOrderStatus, setP
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}></div>
-          <div className="bg-white rounded-3xl w-full max-w-2xl relative shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+          <div className="bg-white rounded-3xl w-full max-w-2xl relative shadow-2xl overflow-hidden">
             <div className="bg-ayurveda-green p-6 text-white flex justify-between items-center">
-              <h3 className="text-2xl font-bold brand-font">Create New Remedy</h3>
+              <h3 className="text-2xl font-bold brand-font">New Ayurvedic Remedy</h3>
               <button onClick={() => setIsModalOpen(false)} className="text-white/70 hover:text-white">
                 <i className="fas fa-times text-xl"></i>
               </button>
             </div>
             
-            <form onSubmit={handleAddProduct} className="p-8 space-y-6 max-h-[70vh] overflow-y-auto">
+            <form onSubmit={handleAddProduct} className="p-8 space-y-6 max-h-[75vh] overflow-y-auto">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-stone-700">Product Name</label>
+                  <label className="text-sm font-bold text-stone-700">Remedy Name</label>
                   <input 
                     required
                     type="text"
                     className="w-full p-3 rounded-xl border border-stone-200 focus:ring-2 focus:ring-ayurveda-green outline-none"
-                    placeholder="e.g., Organic Ashwagandha"
+                    placeholder="e.g., Pure Shilajit Resin"
                     value={newProduct.name}
                     onChange={e => setNewProduct({...newProduct, name: e.target.value})}
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-stone-700">Category</label>
+                  <label className="text-sm font-bold text-stone-700">Health Category</label>
                   <select 
                     className="w-full p-3 rounded-xl border border-stone-200 focus:ring-2 focus:ring-ayurveda-green outline-none"
                     value={newProduct.category}
@@ -217,12 +219,12 @@ const Admin: React.FC<AdminProps> = ({ orders, products, updateOrderStatus, setP
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-bold text-stone-700">Description</label>
+                <label className="text-sm font-bold text-stone-700">Description / Benefits</label>
                 <textarea 
                   required
                   rows={3}
                   className="w-full p-3 rounded-xl border border-stone-200 focus:ring-2 focus:ring-ayurveda-green outline-none"
-                  placeholder="Describe the healing properties..."
+                  placeholder="Describe the healing properties of this herbal remedy..."
                   value={newProduct.description}
                   onChange={e => setNewProduct({...newProduct, description: e.target.value})}
                 />
@@ -230,11 +232,10 @@ const Admin: React.FC<AdminProps> = ({ orders, products, updateOrderStatus, setP
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-stone-700">Price ($)</label>
+                  <label className="text-sm font-bold text-stone-700">Price (₹)</label>
                   <input 
                     required
                     type="number"
-                    step="0.01"
                     className="w-full p-3 rounded-xl border border-stone-200 focus:ring-2 focus:ring-ayurveda-green outline-none"
                     value={newProduct.price}
                     onChange={e => setNewProduct({...newProduct, price: Number(e.target.value)})}
@@ -255,7 +256,7 @@ const Admin: React.FC<AdminProps> = ({ orders, products, updateOrderStatus, setP
                   <input 
                     type="text"
                     className="w-full p-3 rounded-xl border border-stone-200 focus:ring-2 focus:ring-ayurveda-green outline-none"
-                    placeholder="https://..."
+                    placeholder="https://images.unsplash.com/..."
                     value={newProduct.image}
                     onChange={e => setNewProduct({...newProduct, image: e.target.value})}
                   />
@@ -267,18 +268,17 @@ const Admin: React.FC<AdminProps> = ({ orders, products, updateOrderStatus, setP
                   <input 
                     type="checkbox"
                     id="onSale"
-                    className="w-5 h-5 rounded accent-ayurveda-green"
+                    className="w-5 h-5 rounded accent-ayurveda-green cursor-pointer"
                     checked={newProduct.isOnSale}
                     onChange={e => setNewProduct({...newProduct, isOnSale: e.target.checked})}
                   />
-                  <label htmlFor="onSale" className="font-bold text-stone-700">Product is on Sale</label>
+                  <label htmlFor="onSale" className="font-bold text-stone-700 cursor-pointer">Offer Active?</label>
                 </div>
                 {newProduct.isOnSale && (
                   <div className="space-y-2 animate-in slide-in-from-top-2 duration-200">
-                    <label className="text-sm font-bold text-stone-600">Old Price (Before Discount)</label>
+                    <label className="text-sm font-bold text-stone-600">MRP / Old Price (₹)</label>
                     <input 
                       type="number"
-                      step="0.01"
                       className="w-full p-3 rounded-xl border border-stone-200 focus:ring-2 focus:ring-ayurveda-green outline-none bg-white"
                       value={newProduct.oldPrice}
                       onChange={e => setNewProduct({...newProduct, oldPrice: Number(e.target.value)})}
@@ -288,7 +288,7 @@ const Admin: React.FC<AdminProps> = ({ orders, products, updateOrderStatus, setP
               </div>
 
               <button type="submit" className="w-full bg-ayurveda-gold text-ayurveda-green py-4 rounded-2xl font-bold text-xl hover:bg-yellow-600 transition shadow-xl mt-4">
-                Add to Inventory
+                Confirm & Add Remedy
               </button>
             </form>
           </div>

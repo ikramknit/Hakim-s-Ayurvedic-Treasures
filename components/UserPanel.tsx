@@ -12,14 +12,14 @@ const UserPanel: React.FC<UserPanelProps> = ({ orders }) => {
     <div className="max-w-7xl mx-auto px-4 py-12">
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
         <aside className="lg:col-span-1 space-y-6">
-          <div className="bg-white p-6 rounded-2xl border border-stone-200 flex flex-col items-center">
+          <div className="bg-white p-6 rounded-2xl border border-stone-200 flex flex-col items-center shadow-sm">
             <div className="w-20 h-20 bg-ayurveda-gold text-ayurveda-green rounded-full flex items-center justify-center text-3xl font-bold mb-4">
               JD
             </div>
             <h3 className="font-bold text-xl">John Doe</h3>
             <p className="text-stone-400 text-sm">Loyal Seeker of Healing</p>
           </div>
-          <nav className="bg-white rounded-2xl border border-stone-200 overflow-hidden">
+          <nav className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm">
             <button className="w-full text-left px-6 py-4 font-bold bg-stone-50 text-ayurveda-green border-l-4 border-ayurveda-green">Order History</button>
             <button className="w-full text-left px-6 py-4 font-medium hover:bg-stone-50 transition">My Profile</button>
             <button className="w-full text-left px-6 py-4 font-medium hover:bg-stone-50 transition">Address Book</button>
@@ -30,7 +30,7 @@ const UserPanel: React.FC<UserPanelProps> = ({ orders }) => {
         <div className="lg:col-span-3">
           <h2 className="text-3xl font-bold mb-8">My Orders</h2>
           {orders.length === 0 ? (
-            <div className="bg-white p-12 rounded-2xl border border-stone-200 text-center">
+            <div className="bg-white p-12 rounded-2xl border border-stone-200 text-center shadow-sm">
               <i className="fas fa-history text-5xl text-stone-100 mb-4"></i>
               <p className="text-stone-500 mb-6">You haven't placed any orders yet.</p>
               <Link to="/shop" className="bg-ayurveda-green text-white px-8 py-3 rounded-xl font-bold">Start Shopping</Link>
@@ -39,19 +39,19 @@ const UserPanel: React.FC<UserPanelProps> = ({ orders }) => {
             <div className="space-y-6">
               {orders.map(order => (
                 <div key={order.id} className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm">
-                  <div className="bg-stone-50 px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-                    <div className="flex gap-8">
+                  <div className="bg-stone-50 px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4 border-b">
+                    <div className="flex flex-wrap gap-8">
                       <div>
                         <div className="text-xs uppercase text-stone-400 font-bold mb-1">Date Placed</div>
                         <div className="font-medium">{order.date}</div>
                       </div>
                       <div>
-                        <div className="text-xs uppercase text-stone-400 font-bold mb-1">Total Amount</div>
-                        <div className="font-medium">${order.total.toFixed(2)}</div>
+                        <div className="text-xs uppercase text-stone-400 font-bold mb-1">Total Paid</div>
+                        <div className="font-medium font-bold text-ayurveda-green">₹{order.total.toFixed(0)}</div>
                       </div>
                       <div>
-                        <div className="text-xs uppercase text-stone-400 font-bold mb-1">Order #</div>
-                        <div className="font-medium">{order.id}</div>
+                        <div className="text-xs uppercase text-stone-400 font-bold mb-1">Order ID</div>
+                        <div className="font-medium text-stone-600">{order.id}</div>
                       </div>
                     </div>
                     <span className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase ${
@@ -68,16 +68,16 @@ const UserPanel: React.FC<UserPanelProps> = ({ orders }) => {
                         <div key={item.id} className="flex items-center gap-4">
                           <img src={item.image} className="w-12 h-12 object-cover rounded-lg" alt={item.name} />
                           <div className="flex-grow">
-                            <h4 className="font-bold text-sm">{item.name}</h4>
-                            <p className="text-xs text-stone-400">Qty: {item.quantity}</p>
+                            <h4 className="font-bold text-sm line-clamp-1">{item.name}</h4>
+                            <p className="text-xs text-stone-400">Quantity: {item.quantity}</p>
                           </div>
-                          <Link to="/shop" className="text-ayurveda-green text-sm font-bold hover:underline">Buy again</Link>
+                          <Link to="/shop" className="text-ayurveda-green text-sm font-bold hover:underline">Re-order</Link>
                         </div>
                       ))}
                     </div>
                   </div>
                   <div className="px-6 py-4 bg-stone-50 border-t border-stone-100 flex justify-end">
-                    <button className="text-stone-500 hover:text-stone-800 text-sm font-bold">Track Package</button>
+                    <button className="text-stone-500 hover:text-stone-800 text-sm font-bold">Track Status</button>
                   </div>
                 </div>
               ))}
