@@ -1,0 +1,8 @@
+{
+  "name": "Hakim's Ayurvedic Treasures",
+  "description": "A premium e-commerce platform for traditional Ayurvedic medicines and medicinal herbs featuring an AI-powered diagnostic assistant.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
