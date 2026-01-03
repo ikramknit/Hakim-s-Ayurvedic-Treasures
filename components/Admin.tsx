@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Order, Product } from '../types.ts';
 import { CATEGORIES } from '../data.ts';
+import { generateProductImage } from '../services/geminiService.ts';
 
 interface AdminProps {
   orders: Order[];
@@ -14,6 +15,7 @@ interface AdminProps {
 const Admin: React.FC<AdminProps> = ({ orders, products, updateOrderStatus, setProducts, onLogout }) => {
   const [activeTab, setActiveTab] = useState<'orders' | 'products'>('orders');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [newProduct, setNewProduct] = useState<Partial<Product>>({
     name: '',
     description: '',
@@ -55,6 +57,23 @@ const Admin: React.FC<AdminProps> = ({ orders, products, updateOrderStatus, setP
       oldPrice: 0
     });
     alert('Product added to inventory!');
+  };
+
+  const handleAISuggestImage = async () => {
+    if (!newProduct.name) {
+      alert("Please enter a remedy name first so the AI knows what to visualize.");
+      return;
+    }
+
+    setIsGeneratingImage(true);
+    const imageUrl = await generateProductImage(newProduct.name, newProduct.description || '');
+    
+    if (imageUrl) {
+      setNewProduct(prev => ({ ...prev, image: imageUrl }));
+    } else {
+      alert("The AI is currently resting. Please try again later or provide a manual URL.");
+    }
+    setIsGeneratingImage(false);
   };
 
   const deleteProduct = (id: string) => {
@@ -192,7 +211,7 @@ const Admin: React.FC<AdminProps> = ({ orders, products, updateOrderStatus, setP
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}></div>
-          <div className="bg-white rounded-3xl w-full max-w-2xl relative shadow-2xl overflow-hidden">
+          <div className="bg-white rounded-3xl w-full max-w-2xl relative shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
             <div className="bg-ayurveda-green p-6 text-white flex justify-between items-center">
               <h3 className="text-2xl font-bold brand-font">New Ayurvedic Remedy</h3>
               <button onClick={() => setIsModalOpen(false)} className="text-white/70 hover:text-white">
@@ -261,15 +280,53 @@ const Admin: React.FC<AdminProps> = ({ orders, products, updateOrderStatus, setP
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-stone-700">Image URL</label>
-                  <input 
-                    type="text"
-                    className="w-full p-3 rounded-xl border border-stone-200 focus:ring-2 focus:ring-ayurveda-green outline-none"
-                    placeholder="https://images.unsplash.com/..."
-                    value={newProduct.image}
-                    onChange={e => setNewProduct({...newProduct, image: e.target.value})}
-                  />
+                  <label className="text-sm font-bold text-stone-700">Image Preview</label>
+                  <div className="h-12 w-12 rounded-lg border border-stone-100 overflow-hidden bg-stone-50">
+                    {newProduct.image ? (
+                      <img src={newProduct.image} className="w-full h-full object-cover" alt="Preview" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-stone-200">
+                        <i className="fas fa-image"></i>
+                      </div>
+                    )}
+                  </div>
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-stone-700 flex justify-between items-center">
+                  Image Source
+                  <button 
+                    type="button"
+                    disabled={isGeneratingImage || !newProduct.name}
+                    onClick={handleAISuggestImage}
+                    className={`text-xs font-bold flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
+                      !newProduct.name 
+                      ? 'text-stone-300 cursor-not-allowed' 
+                      : 'text-ayurveda-green bg-ayurveda-gold/20 hover:bg-ayurveda-gold/40'
+                    }`}
+                  >
+                    {isGeneratingImage ? (
+                      <>
+                        <i className="fas fa-spinner fa-spin"></i>
+                        Harvesting vision...
+                      </>
+                    ) : (
+                      <>
+                        <i className="fas fa-wand-magic-sparkles"></i>
+                        ✨ AI Suggest Image
+                      </>
+                    )}
+                  </button>
+                </label>
+                <input 
+                  type="text"
+                  className="w-full p-3 rounded-xl border border-stone-200 focus:ring-2 focus:ring-ayurveda-green outline-none"
+                  placeholder="Paste URL or use AI suggest"
+                  value={newProduct.image}
+                  onChange={e => setNewProduct({...newProduct, image: e.target.value})}
+                />
+                <p className="text-[10px] text-stone-400 italic">High-quality image of the remedy recommended.</p>
               </div>
 
               <div className="p-4 bg-stone-50 rounded-2xl space-y-4">

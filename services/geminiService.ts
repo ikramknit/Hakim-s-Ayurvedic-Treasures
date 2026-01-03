@@ -28,3 +28,39 @@ export const getAIHakimResponse = async (userMessage: string, availableProducts:
     return "The spirits of the herbs are silent for a moment. Please try again soon.";
   }
 };
+
+export const generateProductImage = async (productName: string, productDescription: string) => {
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) return null;
+
+  const ai = new GoogleGenAI({ apiKey });
+  
+  const prompt = `Professional product photography of ${productName}. 
+  Description: ${productDescription}. 
+  Style: Traditional Ayurvedic medicine setting, clean high-end aesthetic, organic herbs and wooden elements in background, soft natural lighting, 4k resolution, studio quality, white or earthy neutral background. 
+  The image should focus clearly on the medicine container or the herbal ingredients.`;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash-image',
+      contents: {
+        parts: [{ text: prompt }],
+      },
+      config: {
+        imageConfig: {
+          aspectRatio: "1:1"
+        }
+      }
+    });
+
+    for (const part of response.candidates[0].content.parts) {
+      if (part.inlineData) {
+        return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+      }
+    }
+    return null;
+  } catch (error) {
+    console.error("Image Generation Error:", error);
+    return null;
+  }
+};
